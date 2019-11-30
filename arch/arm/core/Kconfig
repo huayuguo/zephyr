@@ -1,10 +1,7 @@
-# Kconfig - ARM core configuration options
+# ARM core configuration options
 
-#
 # Copyright (c) 2015 Wind River Systems, Inc.
-#
 # SPDX-License-Identifier: Apache-2.0
-#
 
 config CPU_CORTEX
 	bool
@@ -15,7 +12,7 @@ config CPU_CORTEX_M
 	bool
 	select CPU_CORTEX
 	select ARCH_HAS_CUSTOM_SWAP_TO_MAIN
-	select HAS_CMSIS
+	select HAS_CMSIS_CORE
 	select HAS_FLASH_LOAD_OFFSET
 	select ARCH_HAS_THREAD_ABORT
 	select ARCH_HAS_TRUSTED_EXECUTION if ARM_TRUSTZONE_M
@@ -23,6 +20,7 @@ config CPU_CORTEX_M
 	select ARCH_HAS_USERSPACE if ARM_MPU
 	select ARCH_HAS_NOCACHE_MEMORY_SUPPORT if ARM_MPU && CPU_HAS_ARM_MPU && CPU_CORTEX_M7
 	select ARCH_HAS_RAMFUNC_SUPPORT
+	select ARCH_HAS_NESTED_EXCEPTION_DETECTION
 	select SWAP_NONATOMIC
 	help
 	  This option signifies the use of a CPU of the Cortex-M family.
@@ -75,13 +73,8 @@ config ISA_ARM
 	  processor start-up. Much of its functionality was subsumed into T32 with
 	  the introduction of Thumb-2 technology.
 
-config DATA_ENDIANNESS_LITTLE
-	bool
-	default y if CPU_CORTEX
-	help
-	  This is driven by the processor implementation, since it is fixed in
-	  hardware. The board should set this value to 'n' if the data is
-	  implemented as big endian.
+config NUM_IRQS
+	int
 
 config STACK_ALIGN_DOUBLE_WORD
 	bool "Align stacks on double-words (8 octets)"
@@ -101,6 +94,12 @@ config RUNTIME_NMI
 	  loop if triggered. This fills the requirement that there must be an
 	  NMI handler installed when the CPU boots. If a custom handler is
 	  needed, enable this option and attach it via _NmiHandlerSet().
+
+config PLATFORM_SPECIFIC_INIT
+	bool "Enable platform (SOC) specific startup hook"
+	help
+	  The platform specific initialization code (z_platform_init) is executed
+	  at the beginning of the startup code (__start).
 
 config FAULT_DUMP
 	int "Fault dump level"
